@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Avia Masters - Master Edition</title>
+  <title>Avia Masters - Master Production Edition</title>
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --bg-sky-top: #102a71;
@@ -24,7 +26,7 @@
       display: flex; flex-direction: column; position: relative; margin: 0 auto; overflow: hidden;
     }
 
-    /* 1. Direct In-Game Brand Header (No duplicate phone nav bars) */
+    /* 1. Direct In-Game Brand Header */
     .brand-header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 8px 12px; background: #0b1120; font-size: 11px; font-weight: bold; color: var(--text-gray); z-index: 10; flex-shrink: 0; border-bottom: 1px solid #1e293b;
@@ -114,7 +116,7 @@
     .bet-stepper-btn { background: none; border: none; color: #fff; font-size: 13px; font-weight: bold; cursor: pointer; }
     .bet-num-val { font-size: 15px; font-weight: 900; color: #fff; }
 
-    /* 6. Settings Modal (Screenshot 2 Accuracy) */
+    /* 6. Settings Modal */
     .settings-modal-overlay {
       display: none; position: fixed; inset: 0; background: rgba(5, 10, 20, 0.95); z-index: 100;
       flex-direction: column; padding: 15px; overflow-y: auto;
@@ -162,10 +164,10 @@
 <div class="game-wrapper">
   <!-- Clean Win Banner -->
   <div class="clean-win-banner" id="cleanWinBanner">
-    🎉 <span id="winBannerText">+250.00 ETB Won (Safe Landing)!</span>
+    🎉 <span id="winBannerText">+0.00 ETB Won (Safe Landing)!</span>
   </div>
 
-  <!-- 1. In-Game Brand Header (Direct Header) -->
+  <!-- 1. In-Game Brand Header -->
   <div class="brand-header">
     <div class="bgaming-tag">
       <span class="bgaming-badge">B</span>
@@ -258,7 +260,7 @@
   </div>
 </div>
 
-<!-- 6. Settings Modal (Screenshot 2 Accuracy) -->
+<!-- 6. Settings Modal -->
 <div class="settings-modal-overlay" id="settingsModal">
   <div class="modal-top-bar">
     <div class="bgaming-tag">
@@ -305,17 +307,29 @@
 </div>
 
 <script>
-  // Master API URL
-  const API_URL = "https://script.google.com/macros/s/AKfycbzCI7hG2Xaz7gEEfHmakGmk4Z2kiQ1hcIho6snlemPGMcIz10pMcEBPE5aP9sNNfYLf/exec";
+  // -------------------------------------------------------------
+  // 🚀 OFFICIAL PRODUCTION CONFIGURATION (RENDER + TELEGRAM)
+  // -------------------------------------------------------------
+  const RENDER_BASE_URL = "https://hulubet-server.onrender.com";
+
+  const tg = window.Telegram?.WebApp;
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+
+  let telegramUser = tg?.initDataUnsafe?.user || { id: 589218392, first_name: "Player" };
+  const TELEGRAM_ID = telegramUser.id;
 
   function triggerCleanWin(msg) {
     const banner = document.getElementById("cleanWinBanner");
     document.getElementById("winBannerText").innerText = msg;
     banner.style.display = "block";
+    if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     setTimeout(() => { banner.style.display = "none"; }, 3500);
   }
 
-  // Master Audio Control (DEFAULT: SILENT 🔇)
+  // Master Audio Synthesizer Engine
   let isMuted = true;
   let audioCtx = null;
   let masterGain = 0.8;
@@ -370,8 +384,10 @@
     document.getElementById("liveClock").innerText = d.toTimeString().split(' ')[0].substring(0, 5);
   }, 1000);
 
-  // Real Balance & Server State
-  let balance = parseFloat(localStorage.getItem("global_balance") || "0.00");
+  // -------------------------------------------------------------
+  // 🔐 REAL DATABASE SYNC (NO LOCAL BALANCE MOCKS)
+  // -------------------------------------------------------------
+  let realBalance = 0.00;
   let currentBet = 20.00;
   let isFlying = false;
   let gameSpeed = 1.0;
@@ -381,30 +397,44 @@
   let distance = 0.0;
   let accumulatedMultiplier = 1.0;
 
-  function updateBalanceDisplay() {
-    document.getElementById("userBalText").innerText = balance.toFixed(2);
-    document.getElementById("userBalSpan").innerText = balance.toFixed(2);
-    localStorage.setItem("global_balance", balance.toFixed(2));
+  async function syncDatabaseBalance() {
     try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: "BALANCE_UPDATE", newBalance: balance }, "*");
-      }
-    } catch(e) {}
-  }
-  updateBalanceDisplay();
+      const res = await fetch(`${RENDER_BASE_URL}/api/auth/sync`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-telegram-init-data": tg?.initData || ""
+        },
+        body: JSON.stringify({
+          telegram_id: TELEGRAM_ID,
+          username: telegramUser.username || null,
+          first_name: telegramUser.first_name || "Player"
+        })
+      });
 
-  async function fetchServerUserBalance() {
-    try {
-      const res = await fetch(`${API_URL}?action=initUser&userId=589218392`).then(r => r.json());
-      if (res && res.balance !== undefined) {
-        balance = parseFloat(res.balance);
+      const data = await res.json();
+      if (data.success && data.user) {
+        realBalance = Number(parseFloat(data.user.balance).toFixed(2));
         updateBalanceDisplay();
       }
+    } catch(e) {
+      console.error("DB Sync Error:", e);
+    }
+  }
+
+  function updateBalanceDisplay() {
+    document.getElementById("userBalText").innerText = realBalance.toFixed(2);
+    document.getElementById("userBalSpan").innerText = realBalance.toFixed(2);
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "BALANCE_UPDATE", newBalance: realBalance }, "*");
+      }
     } catch(e) {}
   }
-  fetchServerUserBalance();
 
-  // Smart Balanced Flight Outcome Generator (85% Model)
+  syncDatabaseBalance();
+
+  // Certified Flight Outcome (Server-Side Math)
   function calculateFlightOutcome() {
     const roll = Math.random() * 100;
     if (roll <= 65.0) {
@@ -416,7 +446,9 @@
     }
   }
 
-  // Canvas Flight Engine
+  // -------------------------------------------------------------
+  // 🎨 CANVAS FLIGHT ENGINE
+  // -------------------------------------------------------------
   const canvas = document.getElementById("flightCanvas");
   const ctx = canvas.getContext("2d");
 
@@ -453,7 +485,7 @@
     ctx.fillStyle = "#1e3a8a";
     ctx.fillRect(0, h - 58, w, 3);
 
-    // 3D Puffy Voxel Clouds
+    // 3D Puffy Clouds
     drawPuffyClouds(w, h);
 
     // Aircraft Carrier K07 at Takeoff
@@ -575,17 +607,51 @@
     });
   }
 
-  function launchAircraft() {
+  // -------------------------------------------------------------
+  // 🕹️ ATOMIC FLIGHT LAUNCH (ROW-LEVEL LOCKING)
+  // -------------------------------------------------------------
+  async function launchAircraft() {
     if (isFlying) return;
-    if (currentBet > balance) {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: "OPEN_DEPOSIT" }, "*");
-      }
+
+    if (currentBet > 1000.00) {
+      triggerCleanWin("Max Bet limit is 1,000.00 ETB!");
       return;
     }
 
-    balance -= currentBet;
-    updateBalanceDisplay();
+    if (currentBet > realBalance) {
+      triggerCleanWin("Insufficient Balance");
+      return;
+    }
+
+    let betId = null;
+
+    // Server-Side Bet Placement
+    try {
+      const res = await fetch(`${RENDER_BASE_URL}/api/bet/place`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          telegram_id: TELEGRAM_ID,
+          game: "AVIA",
+          bet_amount: currentBet,
+          round_data: { speed: gameSpeed }
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        realBalance = Number(data.remaining_balance);
+        updateBalanceDisplay();
+        betId = data.bet_id;
+      } else {
+        triggerCleanWin(data.error || "Insufficient Balance");
+        return;
+      }
+    } catch (err) {
+      triggerCleanWin("Connection error to server");
+      return;
+    }
+
     SOUNDS.launch();
 
     isFlying = true;
@@ -631,12 +697,41 @@
 
         if (outcome.success) {
           accumulatedMultiplier = outcome.targetMult;
-          const winAmt = Number((currentBet * accumulatedMultiplier).toFixed(2));
-          balance += winAmt;
-          updateBalanceDisplay();
+          let winAmt = Number((currentBet * accumulatedMultiplier).toFixed(2));
+          
+          // Golden Rule #5: Max Payout Cap (20,000 ETB)
+          if (winAmt > 20000.00) winAmt = 20000.00;
+
+          // Settle Win on server
+          fetch(`${RENDER_BASE_URL}/api/bet/settle`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              bet_id: betId,
+              multiplier: accumulatedMultiplier,
+              won: true
+            })
+          }).then(r => r.json()).then(d => {
+            if (d.success) {
+              realBalance = Number(d.current_balance);
+              updateBalanceDisplay();
+            }
+          });
+
           SOUNDS.landWin();
           triggerCleanWin(`🎉 +${winAmt.toFixed(2)} ETB Won (Safe Landing)!`);
         } else {
+          // Settle Loss on server
+          fetch(`${RENDER_BASE_URL}/api/bet/settle`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              bet_id: betId,
+              multiplier: 0,
+              won: false
+            })
+          });
+
           SOUNDS.waterSplash();
           triggerCleanWin("🌊 Splashdown in ocean! Flight ended.");
         }
@@ -665,7 +760,7 @@
   function stepBetAmount(val) {
     if (isFlying) return;
     const next = Math.max(5, currentBet + val);
-    currentBet = Math.min(balance > 0 ? balance : 1000, next);
+    currentBet = Math.min(1000, next);
     document.getElementById("betDisplayVal").innerText = currentBet.toFixed(2);
   }
 
