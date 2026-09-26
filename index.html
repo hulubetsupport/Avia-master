@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Avia Masters - Master Production Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Avia Masters - BGaming Official Edition</title>
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
@@ -12,21 +12,20 @@
       --bg-sky-mid: #1d4ed8;
       --ocean-blue: #0b193d;
       --gold-yellow: #ffcc00;
-      --gold-hover: #ffd633;
       --accent-green: #00e676;
       --accent-red: #ff3344;
       --card-bg: #0f172a;
       --text-gray: #94a3b8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    html, body { width: 100%; height: 100%; background: #000; color: #fff; overflow-x: hidden; }
+    html, body { width: 100%; height: 100%; background: #000; color: #fff; overflow: hidden; }
     
     .game-wrapper {
-      width: 100%; height: 100vh; max-height: 100vh; background: #020617;
-      display: flex; flex-direction: column; position: relative; margin: 0 auto; overflow: hidden;
+      width: 100%; height: 100vh; background: #020617;
+      display: flex; flex-direction: column; position: relative; margin: 0 auto; max-width: 480px;
     }
 
-    /* 1. Direct In-Game Brand Header */
+    /* 1. Header */
     .brand-header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 8px 12px; background: #0b1120; font-size: 11px; font-weight: bold; color: var(--text-gray); z-index: 10; flex-shrink: 0; border-bottom: 1px solid #1e293b;
@@ -48,56 +47,53 @@
     }
     #flightCanvas { width: 100%; height: 100%; display: block; }
 
-    /* Watermark Logo */
     .watermark-logo {
-      position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-      font-size: 26px; font-weight: 900; color: rgba(255, 255, 255, 0.08); letter-spacing: 2px;
+      position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+      font-size: 24px; font-weight: 900; color: rgba(255, 255, 255, 0.08); letter-spacing: 2px;
       text-transform: uppercase; pointer-events: none; text-align: center; line-height: 1;
     }
-    .watermark-logo span { display: block; font-size: 15px; letter-spacing: 6px; }
+    .watermark-logo span { display: block; font-size: 14px; letter-spacing: 5px; }
 
-    /* 3. Speed Selector Row (🐢, 🚶, 🐇, ⚡) */
+    /* 3. Speed Selector Row */
     .speed-selector-row {
-      position: absolute; bottom: 75px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 5;
+      position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 5;
       background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); padding: 4px 8px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .speed-btn {
-      width: 36px; height: 36px; border-radius: 50%; background: #1e293b; border: 1px solid #334155;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s;
+      width: 34px; height: 34px; border-radius: 50%; background: #1e293b; border: 1px solid #334155;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; font-size: 14px;
     }
-    .speed-btn svg { width: 17px; height: 17px; fill: #cbd5e1; }
     .speed-btn.active {
       background: #3b82f6; border-color: #60a5fa; box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
     }
-    .speed-btn.active svg { fill: #fff; }
 
     /* 4. Flight Stats Dashboard */
     .flight-stats-pill {
-      position: absolute; bottom: 15px; left: 12px; right: 12px; background: rgba(11, 25, 61, 0.85);
+      position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(11, 25, 61, 0.85);
       backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px;
       display: flex; justify-content: space-around; padding: 5px 8px; z-index: 5;
     }
     .stat-col { text-align: center; }
-    .stat-label { font-size: 8px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-label { font-size: 8px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; }
     .stat-val { font-size: 13px; font-weight: 900; color: #fff; margin-top: 1px; }
 
     /* 5. Bottom Launch Controls */
     .bottom-controls-area {
-      background: #090e1a; border-top: 1px solid #1e293b; padding: 10px 16px 14px;
+      background: #090e1a; border-top: 1px solid #1e293b; padding: 8px 16px 14px;
       display: flex; flex-direction: column; align-items: center; z-index: 10; flex-shrink: 0;
     }
 
-    .play-button-wrapper { position: relative; margin-bottom: 8px; }
+    .play-button-wrapper { position: relative; margin-bottom: 6px; }
     .big-launch-btn {
-      width: 82px; height: 82px; border-radius: 50%; background: #0f172a; border: 4px solid #fff;
+      width: 78px; height: 78px; border-radius: 50%; background: #0f172a; border: 4px solid #fff;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), inset 0 0 10px rgba(0,0,0,0.8);
-      display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s transform, 0.15s opacity;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s transform;
     }
     .big-launch-btn:active { transform: scale(0.92); }
-    .play-arrow-svg { margin-left: 4px; width: 26px; height: 26px; fill: #fff; }
+    .play-arrow-svg { margin-left: 4px; width: 24px; height: 24px; fill: #fff; }
 
     .auto-btn-badge {
-      position: absolute; right: -24px; top: 12px; width: 26px; height: 26px; border-radius: 50%;
+      position: absolute; right: -22px; top: 10px; width: 26px; height: 26px; border-radius: 50%;
       background: #1e293b; border: 1px solid #334155; display: flex; align-items: center; justify-content: center;
       font-size: 10px; font-weight: 900; color: #fff; cursor: pointer;
     }
@@ -108,54 +104,21 @@
     }
     .bal-block { display: flex; flex-direction: column; }
     .bal-title { font-size: 9px; font-weight: 800; color: var(--text-gray); }
-    .bal-num { font-size: 14px; font-weight: 900; color: #fff; }
+    .bal-num { font-size: 13px; font-weight: 900; color: #fff; }
 
     .bet-block { display: flex; flex-direction: column; align-items: flex-end; }
     .bet-title { font-size: 9px; font-weight: 800; color: var(--text-gray); }
     .bet-selector-stepper { display: flex; align-items: center; gap: 8px; margin-top: 1px; }
-    .bet-stepper-btn { background: none; border: none; color: #fff; font-size: 13px; font-weight: bold; cursor: pointer; }
-    .bet-num-val { font-size: 15px; font-weight: 900; color: #fff; }
-
-    /* 6. Settings Modal */
-    .settings-modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(5, 10, 20, 0.95); z-index: 100;
-      flex-direction: column; padding: 15px; overflow-y: auto;
-    }
-    .modal-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .modal-close-icon { font-size: 22px; cursor: pointer; color: #fff; }
-    
-    .settings-title { font-size: 18px; font-weight: 900; letter-spacing: 4px; text-align: center; margin-bottom: 25px; color: #fff; }
-    .slider-group { margin-bottom: 20px; }
-    .slider-label { font-size: 12px; font-weight: 800; color: var(--text-gray); margin-bottom: 8px; text-transform: uppercase; }
-    .custom-slider {
-      width: 100%; height: 6px; background: #1e293b; border-radius: 3px; outline: none; -webkit-appearance: none;
-    }
-    .custom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #3b82f6; border: 2px solid #fff; cursor: pointer;
-    }
-
-    .btn-reset-spin {
-      width: 100%; background: #1e293b; border: 1px solid #334155; color: #fff; font-weight: 800;
-      font-size: 13px; padding: 10px; border-radius: 20px; cursor: pointer; margin: 15px 0 25px; text-transform: uppercase;
-    }
-
-    .wheel-container {
-      display: flex; flex-direction: column; align-items: center; margin-top: 10px;
-    }
-    .position-wheel {
-      width: 110px; height: 110px; border-radius: 50%; border: 3px solid #fff; position: relative;
-      display: flex; align-items: center; justify-content: center; margin: 10px 0;
-    }
-    .wheel-text { font-size: 10px; font-weight: bold; text-align: center; color: #fff; }
+    .bet-stepper-btn { background: #1e293b; border: 1px solid #334155; color: #fff; font-size: 12px; font-weight: bold; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .bet-num-val { font-size: 14px; font-weight: 900; color: #fff; }
 
     /* Clean Floating Win Banner */
     .clean-win-banner {
       position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
-      background: linear-gradient(135deg, #00c853, #00e676); color: #000; font-size: 14px; font-weight: 900;
+      background: linear-gradient(135deg, #00c853, #00e676); color: #000; font-size: 13px; font-weight: 900;
       padding: 8px 20px; border-radius: 30px; box-shadow: 0 6px 25px rgba(0, 230, 118, 0.6);
       z-index: 9999; display: none; animation: popWin 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-
     @keyframes popWin { 0% { transform: translate(-50%, -20px) scale(0.8); opacity: 0; } 100% { transform: translate(-50%, 0) scale(1); opacity: 1; } }
   </style>
 </head>
@@ -167,52 +130,32 @@
     🎉 <span id="winBannerText">+0.00 ETB Won (Safe Landing)!</span>
   </div>
 
-  <!-- 1. In-Game Brand Header -->
+  <!-- 1. Header -->
   <div class="brand-header">
     <div class="bgaming-tag">
       <span class="bgaming-badge">B</span>
       <span>AVIAMASTERS</span>
-      <span id="liveClock">22:50</span>
     </div>
-
     <div class="header-right-meta">
       <div class="bal-pill"><span id="userBalText">0.00</span> ETB</div>
-      <div class="header-controls">
-        <!-- Master Sound Toggle (Default: Silent 🔇) -->
-        <span id="soundToggleIcon" onclick="toggleGlobalAudio()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff5252" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>
-        </span>
-        <span onclick="openSettingsModal()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </span>
-      </div>
     </div>
   </div>
 
-  <!-- 2. Main Flight Scene Canvas Area -->
+  <!-- 2. Flight Arena Canvas -->
   <div class="flight-arena">
     <canvas id="flightCanvas"></canvas>
     
-    <!-- Watermark Logo -->
     <div class="watermark-logo">
       AVIA
       <span>MASTERS</span>
     </div>
 
-    <!-- 3. Speed Controls Row (🐢, 🚶, 🐇, ⚡) -->
+    <!-- 3. Speed Selector (🐢, 🚶, 🐇, ⚡) -->
     <div class="speed-selector-row">
-      <button class="speed-btn" id="spd-slow" onclick="setFlightSpeed(0.5, 'spd-slow')">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 2.85 1.2 5.41 3.12 7.22l-1.34 2.33 1.74 1 1.54-2.67C8.42 20.57 10.13 21 12 21c1.87 0 3.58-.43 4.94-1.12l1.54 2.67 1.74-1-1.34-2.33C20.8 17.41 22 14.85 22 12c0-5.52-4.48-10-10-10zm0 17c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-      </button>
-      <button class="speed-btn active" id="spd-normal" onclick="setFlightSpeed(1.0, 'spd-normal')">
-        <svg viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7z"/></svg>
-      </button>
-      <button class="speed-btn" id="spd-fast" onclick="setFlightSpeed(2.0, 'spd-fast')">
-        <svg viewBox="0 0 24 24"><path d="M19 10c0-1.66-1.34-3-3-3s-3 1.34-3 3c0 .8.31 1.52.82 2.06L9 16.88V19h2.12l4.82-4.82c.54.51 1.26.82 2.06.82 1.66 0 3-1.34 3-3zM5 13H3v-2h2v2zm0-4H3V7h2v2zm0-4H3V3h2v2zm4 16H7v-2h2v2z"/></svg>
-      </button>
-      <button class="speed-btn" id="spd-turbo" onclick="setFlightSpeed(4.0, 'spd-turbo')">
-        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      </button>
+      <button class="speed-btn" id="spd-slow" onclick="setFlightSpeed(0.5, 'spd-slow')">🐢</button>
+      <button class="speed-btn active" id="spd-normal" onclick="setFlightSpeed(1.0, 'spd-normal')">🚶</button>
+      <button class="speed-btn" id="spd-fast" onclick="setFlightSpeed(2.0, 'spd-fast')">🐇</button>
+      <button class="speed-btn" id="spd-turbo" onclick="setFlightSpeed(3.5, 'spd-turbo')">⚡</button>
     </div>
 
     <!-- 4. Flight Stats Dashboard -->
@@ -232,17 +175,15 @@
     </div>
   </div>
 
-  <!-- 5. Bottom Controls Area -->
+  <!-- 5. Bottom Launch Controls -->
   <div class="bottom-controls-area">
-    <!-- Big Play Launch Button -->
-    <div class="play-button-wrapper" id="spinButtonContainer">
+    <div class="play-button-wrapper">
       <button class="big-launch-btn" id="launchBtn" onclick="launchAircraft()">
         <svg class="play-arrow-svg" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
       </button>
       <div class="auto-btn-badge" id="autoBadge" onclick="toggleAutoFlight()">A</div>
     </div>
 
-    <!-- Balance & Total Bet Selector -->
     <div class="bottom-bet-row">
       <div class="bal-block">
         <div class="bal-title">BALANCE</div>
@@ -251,95 +192,37 @@
       <div class="bet-block">
         <div class="bet-title">TOTAL BET</div>
         <div class="bet-selector-stepper">
-          <button class="bet-stepper-btn" onclick="stepBetAmount(5)">▲</button>
+          <button class="bet-stepper-btn" onclick="stepBetAmount(-5)">−</button>
           <span class="bet-num-val"><span id="betDisplayVal">20.00</span> ETB</span>
-          <button class="bet-stepper-btn" onclick="stepBetAmount(-5)">▼</button>
+          <button class="bet-stepper-btn" onclick="stepBetAmount(5)">+</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 6. Settings Modal -->
-<div class="settings-modal-overlay" id="settingsModal">
-  <div class="modal-top-bar">
-    <div class="bgaming-tag">
-      <span class="bgaming-badge">B</span>
-      <span>AVIAMASTERS</span>
-    </div>
-    <div style="display:flex; align-items:center; gap:15px;">
-      <span onclick="toggleGlobalAudio()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-      </span>
-      <span class="modal-close-icon" onclick="closeSettingsModal()">✕</span>
-    </div>
-  </div>
-
-  <div class="settings-title">SETTINGS</div>
-
-  <div class="slider-group">
-    <div class="slider-label">SOUND FX</div>
-    <input type="range" min="0" max="100" value="80" class="custom-slider" id="soundSlider" oninput="updateAudioGain()">
-  </div>
-
-  <div class="slider-group">
-    <div class="slider-label">MUSIC</div>
-    <input type="range" min="0" max="100" value="60" class="custom-slider">
-  </div>
-
-  <button class="btn-reset-spin" onclick="resetSpinButtonSettings()">RESET SPIN BUTTON</button>
-
-  <div class="slider-group">
-    <div class="slider-label">SPIN BUTTON'S SIZE</div>
-    <input type="range" min="60" max="110" value="82" class="custom-slider" id="btnSizeSlider" oninput="adjustBtnSize(this.value)">
-  </div>
-
-  <div class="slider-group">
-    <div class="slider-label">SPIN BUTTON'S OPACITY</div>
-    <input type="range" min="30" max="100" value="100" class="custom-slider" id="btnOpacitySlider" oninput="adjustBtnOpacity(this.value)">
-  </div>
-
-  <div class="wheel-container">
-    <div class="position-wheel">
-      <div class="wheel-text">Spin button's<br>place 👆</div>
-    </div>
-  </div>
-</div>
-
 <script>
-  // -------------------------------------------------------------
-  // 🚀 OFFICIAL PRODUCTION CONFIGURATION (RENDER + TELEGRAM)
-  // -------------------------------------------------------------
+  // ============================================================================
+  // 🚀 AVIAMASTERS - INTEGRATED WITH HULU BET RENDER BACKEND (/api/bet/play)
+  // ============================================================================
   const RENDER_BASE_URL = "https://hulubet-server.onrender.com";
 
-  const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.ready();
-    tg.expand();
-  }
-
-  let telegramUser = tg?.initDataUnsafe?.user || { id: 589218392, first_name: "Player" };
-  const TELEGRAM_ID = telegramUser.id;
+  // URL Injection: User ID & Balance from Main Lobby
+  const urlParams = new URLSearchParams(window.location.search);
+  let USER_ID = urlParams.get('userId') || "589218392";
+  let balance = parseFloat(urlParams.get('balance')) || 20.00;
 
   function triggerCleanWin(msg) {
     const banner = document.getElementById("cleanWinBanner");
     document.getElementById("winBannerText").innerText = msg;
     banner.style.display = "block";
-    if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     setTimeout(() => { banner.style.display = "none"; }, 3500);
   }
 
-  // Master Audio Synthesizer Engine
-  let isMuted = true;
+  // Audio Synthesizer
   let audioCtx = null;
-  let masterGain = 0.8;
-
-  function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-
+  function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
   function playTone(freq, type, dur) {
-    if (isMuted) return;
     try {
       initAudio();
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -347,47 +230,20 @@
       const gain = audioCtx.createGain();
       osc.type = type;
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(masterGain * 0.08, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + dur);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + dur);
     } catch(e) {}
   }
-
   const SOUNDS = {
     launch: () => playTone(300, 'sawtooth', 0.4),
     pickup: () => { playTone(600, 'sine', 0.08); setTimeout(() => playTone(900, 'triangle', 0.12), 60); },
-    rocketHit: () => playTone(120, 'sawtooth', 0.3),
-    landWin: () => { playTone(523.25, 'triangle', 0.15); setTimeout(() => playTone(659.25, 'triangle', 0.15), 100); setTimeout(() => playTone(783.99, 'triangle', 0.3), 200); },
-    waterSplash: () => playTone(100, 'sine', 0.3)
+    landWin: () => { playTone(523, 'triangle', 0.12); setTimeout(() => playTone(659, 'triangle', 0.12), 90); setTimeout(() => playTone(783, 'triangle', 0.25), 180); },
+    splash: () => playTone(120, 'sine', 0.3)
   };
 
-  function toggleGlobalAudio() {
-    isMuted = !isMuted;
-    const el = document.getElementById("soundToggleIcon");
-    if (isMuted) {
-      el.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff5252" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>`;
-    } else {
-      el.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00e676" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
-    }
-  }
-
-  function updateAudioGain() {
-    masterGain = document.getElementById("soundSlider").value / 100;
-  }
-
-  // Digital Clock
-  setInterval(() => {
-    const d = new Date();
-    document.getElementById("liveClock").innerText = d.toTimeString().split(' ')[0].substring(0, 5);
-  }, 1000);
-
-  // -------------------------------------------------------------
-  // 🔐 REAL DATABASE SYNC (NO LOCAL BALANCE MOCKS)
-  // -------------------------------------------------------------
-  let realBalance = 0.00;
+  // State Management
   let currentBet = 20.00;
   let isFlying = false;
   let gameSpeed = 1.0;
@@ -396,77 +252,43 @@
   let altitude = 0.0;
   let distance = 0.0;
   let accumulatedMultiplier = 1.0;
-
-  async function syncDatabaseBalance() {
-    try {
-      const res = await fetch(`${RENDER_BASE_URL}/api/auth/sync`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-telegram-init-data": tg?.initData || ""
-        },
-        body: JSON.stringify({
-          telegram_id: TELEGRAM_ID,
-          username: telegramUser.username || null,
-          first_name: telegramUser.first_name || "Player"
-        })
-      });
-
-      const data = await res.json();
-      if (data.success && data.user) {
-        realBalance = Number(parseFloat(data.user.balance).toFixed(2));
-        updateBalanceDisplay();
-      }
-    } catch(e) {
-      console.error("DB Sync Error:", e);
-    }
-  }
+  let skyTokens = [];
 
   function updateBalanceDisplay() {
-    document.getElementById("userBalText").innerText = realBalance.toFixed(2);
-    document.getElementById("userBalSpan").innerText = realBalance.toFixed(2);
+    document.getElementById("userBalText").innerText = balance.toFixed(2);
+    document.getElementById("userBalSpan").innerText = balance.toFixed(2);
     try {
       if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type: "BALANCE_UPDATE", newBalance: realBalance }, "*");
+        window.parent.postMessage({ type: "BALANCE_UPDATE", newBalance: balance }, "*");
       }
     } catch(e) {}
   }
+  updateBalanceDisplay();
 
-  syncDatabaseBalance();
-
-  // Certified Flight Outcome (Server-Side Math)
-  function calculateFlightOutcome() {
-    const roll = Math.random() * 100;
-    if (roll <= 65.0) {
-      return { success: false, targetMult: 0 };
-    } else if (roll <= 92.0) {
-      return { success: true, targetMult: Number((1.2 + Math.random() * 2.3).toFixed(2)) };
-    } else {
-      return { success: true, targetMult: Number((4.0 + Math.random() * 21.0).toFixed(2)) };
-    }
+  // Handshake with Lobby
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: "GAME_READY" }, "*");
   }
+  window.addEventListener('message', (e) => {
+    if (e.data?.type === 'INIT_BALANCE' || e.data?.type === 'UPDATE_BALANCE') {
+      if (e.data.balance !== undefined) { balance = parseFloat(e.data.balance); updateBalanceDisplay(); }
+      if (e.data.userId) USER_ID = String(e.data.userId);
+    }
+  });
 
-  // -------------------------------------------------------------
-  // 🎨 CANVAS FLIGHT ENGINE
-  // -------------------------------------------------------------
+  // Canvas Flight Scene
   const canvas = document.getElementById("flightCanvas");
   const ctx = canvas.getContext("2d");
-
-  function resizeCanvas() {
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
-  }
+  function resizeCanvas() { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; }
   window.addEventListener("resize", resizeCanvas);
   resizeCanvas();
-
-  let skyTokens = [];
 
   function initSkyScene() {
     skyTokens = [];
     for (let i = 1; i <= 6; i++) {
       skyTokens.push({
         x: canvas.width * 0.25 * i,
-        y: canvas.height * 0.3 + (Math.sin(i) * 40),
+        y: canvas.height * 0.3 + (Math.sin(i) * 35),
         type: i % 3 === 0 ? "ROCKET" : "MULT",
         val: i % 2 === 0 ? 2 : 1.5,
         collected: false
@@ -474,26 +296,25 @@
     }
   }
 
-  function drawAviaScene(planeX, planeY, flightProgress) {
+  function drawAviaScene(planeX, planeY, flightProgress, showDestination) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const w = canvas.width;
-    const h = canvas.height;
+    const w = canvas.width, h = canvas.height;
 
     // Ocean Waves
-    ctx.fillStyle = "#0c1b40";
-    ctx.fillRect(0, h - 55, w, 55);
-    ctx.fillStyle = "#1e3a8a";
-    ctx.fillRect(0, h - 58, w, 3);
+    ctx.fillStyle = "#0c1b40"; ctx.fillRect(0, h - 55, w, 55);
+    ctx.fillStyle = "#1e3a8a"; ctx.fillRect(0, h - 58, w, 3);
 
-    // 3D Puffy Clouds
-    drawPuffyClouds(w, h);
+    // Clouds
+    ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+    ctx.beginPath(); ctx.arc(w * 0.2, h * 0.45, 28, 0, Math.PI * 2); ctx.arc(w * 0.3, h * 0.4, 38, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w * 0.75, h * 0.4, 32, 0, Math.PI * 2); ctx.arc(w * 0.85, h * 0.36, 42, 0, Math.PI * 2); ctx.fill();
 
-    // Aircraft Carrier K07 at Takeoff
-    drawAircraftCarrier(w * 0.15 - (flightProgress * w * 0.8), h - 60);
+    // Takeoff Aircraft Carrier K07
+    drawCarrier(w * 0.15 - (flightProgress * w * 0.8), h - 60);
 
-    // Destination Carrier on Success
-    if (flightProgress > 0.6) {
-      drawAircraftCarrier(w * 0.6 + ((1 - flightProgress) * 100), h - 60);
+    // Destination Carrier K07 on Safe Landing
+    if (showDestination) {
+      drawCarrier(w * 0.65 + ((1 - flightProgress) * 90), h - 60);
     }
 
     // Sky Tokens
@@ -503,43 +324,14 @@
     drawBiplane(planeX, planeY);
   }
 
-  function drawPuffyClouds(w, h) {
-    ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
-    ctx.beginPath();
-    ctx.arc(w * 0.2, h * 0.45, 30, 0, Math.PI * 2);
-    ctx.arc(w * 0.28, h * 0.40, 42, 0, Math.PI * 2);
-    ctx.arc(w * 0.38, h * 0.46, 32, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(w * 0.7, h * 0.42, 35, 0, Math.PI * 2);
-    ctx.arc(w * 0.8, h * 0.38, 48, 0, Math.PI * 2);
-    ctx.arc(w * 0.9, h * 0.44, 30, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function drawAircraftCarrier(x, y) {
+  function drawCarrier(x, y) {
     ctx.save();
     ctx.translate(x, y);
-
     ctx.fillStyle = "#64748b";
-    ctx.beginPath();
-    ctx.moveTo(0, 0); ctx.lineTo(160, 0); ctx.lineTo(140, 18); ctx.lineTo(15, 18);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "#ef4444";
-    ctx.fillRect(18, 16, 120, 3);
-
-    ctx.fillStyle = "#334155";
-    ctx.fillRect(0, -3, 165, 4);
-
-    ctx.fillStyle = "#475569";
-    ctx.fillRect(100, -18, 25, 15);
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 8px sans-serif";
-    ctx.fillText("K07", 128, 12);
-
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(150, 0); ctx.lineTo(135, 16); ctx.lineTo(12, 16); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#ef4444"; ctx.fillRect(16, 14, 115, 3);
+    ctx.fillStyle = "#334155"; ctx.fillRect(0, -3, 155, 3);
+    ctx.fillStyle = "#fff"; ctx.font = "bold 8px sans-serif"; ctx.fillText("K07", 120, 11);
     ctx.restore();
   }
 
@@ -547,37 +339,18 @@
     ctx.save();
     ctx.translate(x, y);
 
-    ctx.fillStyle = "#ffcc00";
-    ctx.font = "900 11px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(`${(currentBet * accumulatedMultiplier).toFixed(2)} ETB`, 0, -22);
+    // Live Payout Tag
+    ctx.fillStyle = "#ffcc00"; ctx.font = "900 11px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(`${(currentBet * accumulatedMultiplier).toFixed(2)} ETB`, 0, -20);
 
+    // Fuselage
     ctx.fillStyle = "#ef4444";
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 18, 7, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#ffcc00";
-    ctx.fillRect(-12, -14, 24, 4);
-    ctx.fillRect(-8, 6, 20, 3);
-
-    ctx.fillStyle = "#f59e0b";
-    ctx.beginPath();
-    ctx.arc(2, -6, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#ef4444";
-    ctx.beginPath();
-    ctx.moveTo(-16, 0); ctx.lineTo(-24, -10); ctx.lineTo(-20, 0);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.strokeStyle = "rgba(255,255,255,0.85)";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(18, -10); ctx.lineTo(18, 10);
-    ctx.stroke();
-
+    ctx.beginPath(); ctx.ellipse(0, 0, 16, 7, 0, 0, Math.PI * 2); ctx.fill();
+    // Yellow Wings
+    ctx.fillStyle = "#ffcc00"; ctx.fillRect(-10, -12, 22, 3); ctx.fillRect(-7, 6, 18, 3);
+    // Propeller
+    ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(16, -9); ctx.lineTo(16, 9); ctx.stroke();
     ctx.restore();
   }
 
@@ -586,21 +359,12 @@
       if (!token.collected) {
         ctx.save();
         ctx.translate(token.x - (progress * canvas.width * 0.6), token.y);
-
         if (token.type === "MULT") {
-          ctx.fillStyle = "#3b82f6";
-          ctx.beginPath();
-          ctx.arc(0, 0, 14, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#fff";
-          ctx.font = "bold 10px sans-serif";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
+          ctx.fillStyle = "#3b82f6"; ctx.beginPath(); ctx.arc(0, 0, 13, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "bold 9px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
           ctx.fillText(`x${token.val}`, 0, 0);
         } else {
-          ctx.fillStyle = "#ef4444";
-          ctx.font = "14px sans-serif";
-          ctx.fillText("🚀", -7, 5);
+          ctx.fillStyle = "#ef4444"; ctx.font = "13px sans-serif"; ctx.fillText("🚀", -6, 5);
         }
         ctx.restore();
       }
@@ -608,50 +372,17 @@
   }
 
   // -------------------------------------------------------------
-  // 🕹️ ATOMIC FLIGHT LAUNCH (ROW-LEVEL LOCKING)
+  // 🛫 FLIGHT ENGINE (Calls Render Backend /api/bet/play with AviaMasters)
   // -------------------------------------------------------------
   async function launchAircraft() {
     if (isFlying) return;
-
-    if (currentBet > 1000.00) {
-      triggerCleanWin("Max Bet limit is 1,000.00 ETB!");
+    if (currentBet > balance) {
+      if (window.parent && window.parent !== window) window.parent.postMessage({ type: "OPEN_DEPOSIT" }, "*");
       return;
     }
 
-    if (currentBet > realBalance) {
-      triggerCleanWin("Insufficient Balance");
-      return;
-    }
-
-    let betId = null;
-
-    // Server-Side Bet Placement
-    try {
-      const res = await fetch(`${RENDER_BASE_URL}/api/bet/place`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          telegram_id: TELEGRAM_ID,
-          game: "AVIA",
-          bet_amount: currentBet,
-          round_data: { speed: gameSpeed }
-        })
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        realBalance = Number(data.remaining_balance);
-        updateBalanceDisplay();
-        betId = data.bet_id;
-      } else {
-        triggerCleanWin(data.error || "Insufficient Balance");
-        return;
-      }
-    } catch (err) {
-      triggerCleanWin("Connection error to server");
-      return;
-    }
-
+    balance -= currentBet;
+    updateBalanceDisplay();
     SOUNDS.launch();
 
     isFlying = true;
@@ -660,24 +391,40 @@
     accumulatedMultiplier = 1.0;
     initSkyScene();
 
-    const outcome = calculateFlightOutcome();
-    let progress = 0;
+    let serverData = null;
+    try {
+      const res = await fetch(`${RENDER_BASE_URL}/api/bet/play`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: USER_ID,
+          gameName: "AviaMasters",
+          betAmount: currentBet,
+          clientData: {}
+        })
+      });
+      serverData = await res.json();
+    } catch(e) {}
 
+    const isSafeLanding = serverData?.visualOutcome?.safeLanding ?? (serverData?.isWin ?? true);
+    const targetMult = serverData?.visualOutcome?.targetMultiplier || serverData?.multiplier || 1.80;
+
+    let progress = 0;
     const flightInterval = setInterval(() => {
       progress += (0.015 * gameSpeed);
-      distance += (1.2 * gameSpeed);
+      distance += (1.4 * gameSpeed);
 
+      // Collect tokens
       skyTokens.forEach(t => {
-        if (!t.collected && Math.abs((progress * canvas.width * 0.8) - t.x) < 25) {
+        if (!t.collected && Math.abs((progress * canvas.width * 0.8) - t.x) < 22) {
           t.collected = true;
           if (t.type === "MULT") {
             accumulatedMultiplier = Number((accumulatedMultiplier * t.val).toFixed(2));
-            altitude += 15.0;
+            altitude += 12.0;
             SOUNDS.pickup();
           } else {
-            accumulatedMultiplier = Math.max(1.0, Number((accumulatedMultiplier * 0.5).toFixed(2)));
-            altitude = Math.max(5.0, altitude - 20.0);
-            SOUNDS.rocketHit();
+            accumulatedMultiplier = Math.max(1.0, Number((accumulatedMultiplier * 0.6).toFixed(2)));
+            altitude = Math.max(5.0, altitude - 15.0);
           }
         }
       });
@@ -687,64 +434,33 @@
       document.getElementById("statMultiplier").innerText = "×" + accumulatedMultiplier.toFixed(1);
 
       const planeX = canvas.width * 0.35;
-      const planeY = (canvas.height - 70) - (Math.sin(progress * Math.PI) * 120);
+      const planeY = (canvas.height - 68) - (Math.sin(progress * Math.PI) * 115);
 
-      drawAviaScene(planeX, planeY, progress);
+      drawAviaScene(planeX, planeY, progress, isSafeLanding && progress > 0.55);
 
       if (progress >= 1.0) {
         clearInterval(flightInterval);
         isFlying = false;
 
-        if (outcome.success) {
-          accumulatedMultiplier = outcome.targetMult;
-          let winAmt = Number((currentBet * accumulatedMultiplier).toFixed(2));
-          
-          // Golden Rule #5: Max Payout Cap (20,000 ETB)
-          if (winAmt > 20000.00) winAmt = 20000.00;
-
-          // Settle Win on server
-          fetch(`${RENDER_BASE_URL}/api/bet/settle`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              bet_id: betId,
-              multiplier: accumulatedMultiplier,
-              won: true
-            })
-          }).then(r => r.json()).then(d => {
-            if (d.success) {
-              realBalance = Number(d.current_balance);
-              updateBalanceDisplay();
-            }
-          });
-
+        if (isSafeLanding && serverData?.isWin) {
+          accumulatedMultiplier = targetMult;
+          const payout = serverData.payout || Number((currentBet * targetMult).toFixed(2));
+          if (serverData.newBalance !== undefined) balance = serverData.newBalance;
+          else balance += payout;
+          updateBalanceDisplay();
           SOUNDS.landWin();
-          triggerCleanWin(`🎉 +${winAmt.toFixed(2)} ETB Won (Safe Landing)!`);
+          triggerCleanWin(`🎉 +${payout.toFixed(2)} ETB Won (Safe Landing)!`);
         } else {
-          // Settle Loss on server
-          fetch(`${RENDER_BASE_URL}/api/bet/settle`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              bet_id: betId,
-              multiplier: 0,
-              won: false
-            })
-          });
-
-          SOUNDS.waterSplash();
-          triggerCleanWin("🌊 Splashdown in ocean! Flight ended.");
+          SOUNDS.splash();
+          triggerCleanWin("🌊 Ocean Splashdown! Flight ended.");
         }
 
         setTimeout(() => {
-          altitude = 0.0;
-          distance = 0.0;
-          accumulatedMultiplier = 1.0;
+          altitude = 0.0; distance = 0.0; accumulatedMultiplier = 1.0;
           document.getElementById("statAltitude").innerText = "0.0m";
           document.getElementById("statDistance").innerText = "0.0m";
           document.getElementById("statMultiplier").innerText = "×1.0";
-          drawAviaScene(canvas.width * 0.25, canvas.height - 68, 0);
-
+          drawAviaScene(canvas.width * 0.25, canvas.height - 68, 0, false);
           if (autoFlight) launchAircraft();
         }, 1500);
       }
@@ -759,8 +475,7 @@
 
   function stepBetAmount(val) {
     if (isFlying) return;
-    const next = Math.max(5, currentBet + val);
-    currentBet = Math.min(1000, next);
+    currentBet = Math.max(5, Math.min(balance > 0 ? balance : 1000, currentBet + val));
     document.getElementById("betDisplayVal").innerText = currentBet.toFixed(2);
   }
 
@@ -770,28 +485,8 @@
     if (autoFlight && !isFlying) launchAircraft();
   }
 
-  function openSettingsModal() { document.getElementById("settingsModal").style.display = "flex"; }
-  function closeSettingsModal() { document.getElementById("settingsModal").style.display = "none"; }
-
-  function adjustBtnSize(val) {
-    const btn = document.getElementById("launchBtn");
-    btn.style.width = val + "px";
-    btn.style.height = val + "px";
-  }
-
-  function adjustBtnOpacity(val) {
-    document.getElementById("launchBtn").style.opacity = val / 100;
-  }
-
-  function resetSpinButtonSettings() {
-    adjustBtnSize(82);
-    adjustBtnOpacity(100);
-    document.getElementById("btnSizeSlider").value = 82;
-    document.getElementById("btnOpacitySlider").value = 100;
-  }
-
-  // Initial Scene Draw
-  drawAviaScene(canvas.width * 0.25, canvas.height - 68, 0);
+  // Initial Draw
+  drawAviaScene(canvas.width * 0.25, canvas.height - 68, 0, false);
 </script>
 </body>
 </html>
