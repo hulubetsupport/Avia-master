@@ -929,13 +929,15 @@
       const d = await api('/api/user/init');
       if (d.success) {
         serverBalance = d.balance;
+        if (!isFlying) shownBalance = d.balance;
         showBalance();
       }
     }
 
+    let shownBalance = 0;
     function showBalance() {
-      document.getElementById('balance-display').textContent = Number(serverBalance).toFixed(2) + " ETB";
-      postParent({ type: 'BALANCE_UPDATE', newBalance: serverBalance });
+      document.getElementById('balance-display').textContent = Number(shownBalance).toFixed(2) + " ETB";
+      if (shownBalance === serverBalance) postParent({ type: 'BALANCE_UPDATE', newBalance: serverBalance });
     }
 
     setTimeout(() => {
@@ -1541,79 +1543,18 @@
     }
 
     // GENERATE IN-FLIGHT ROUTE TARGETING THE SERVER OUTCOME
-    function buildFlightRoute(isWin, targetMult) {
+    function buildFlightRoute(items) {
       skyObjects = [];
       floatingTexts = [];
-
-      // We schedule 6–9 sky items distributed evenly along the flight timeline
-      const itemCount = isWin ? 6 : 5;
-      let runningMult = 1.0;
-
-      for (let i = 0; i < itemCount; i++) {
-        const tFraction = 0.20 + (i / itemCount) * 0.58; // between 20% and 78% flight progress
-
-        if (isWin) {
-          // On safe landing, mix numbers and multipliers to climb to targetMult
-          if (i === 1 && Math.random() > 0.4) {
-            // Occasional rocket that divides by 2 for authentic drama
-            skyObjects.push({
-              fraction: tFraction,
-              type: 'rocket',
-              val: 2,
-              x: W + 100,
-              y: H * 0.42,
-              hit: false,
-              pulse: 0
-            });
-          } else if (i % 2 === 0) {
-            // Multiplier item (x2, x3, x4)
-            skyObjects.push({
-              fraction: tFraction,
-              type: 'mult',
-              val: Math.min(4, Math.max(2, Math.round(targetMult / 2) || 2)),
-              x: W + 100,
-              y: H * (0.30 + (i % 3) * 0.08),
-              hit: false,
-              pulse: 0
-            });
-          } else {
-            // Additive number (1, 2, 5, 10)
-            const numVals = [1, 2, 5, 10];
-            skyObjects.push({
-              fraction: tFraction,
-              type: 'number',
-              val: numVals[Math.floor(Math.random() * numVals.length)],
-              x: W + 100,
-              y: H * (0.28 + (i % 2) * 0.12),
-              hit: false,
-              pulse: 0
-            });
-          }
-        } else {
-          // Loss round: plane encounters a rocket and dives/crashes
-          if (i >= 2) {
-            skyObjects.push({
-              fraction: tFraction,
-              type: 'rocket',
-              val: 2,
-              x: W + 100,
-              y: H * (0.42 + (i - 2) * 0.1),
-              hit: false,
-              pulse: 0
-            });
-          } else {
-            skyObjects.push({
-              fraction: tFraction,
-              type: 'number',
-              val: 1,
-              x: W + 100,
-              y: H * 0.35,
-              hit: false,
-              pulse: 0
-            });
-          }
-        }
-      }
+      const dys = [-22, 12, -8, 20, -16, 6];
+      items.forEach((it, i) => {
+        skyObjects.push({
+          fraction: 0.23 + (i / items.length) * 0.55,   // reaches the plane while it cruises
+          type: it.type, val: it.val,
+          x: W + 100, y: 0, dy: dys[i % dys.length],
+          hit: false, pulse: 0
+        });
+      });
     }
 
     // MAIN 60FPS RENDER & SIMULATION LOOP
@@ -1671,8 +1612,9 @@
         // FLIGHT IN PROGRESS
         flightProgress = (time - roundStartTime) / ((BASE_FLIGHT_TIME * 1000) / gameSpeed);
 
-        const isWin = roundPayload && (roundPayload.isWin || (roundPayload.visualOutcome && roundPayload.visualOutcome.safeLanding));
-        const finalMult = (roundPayload && (roundPayload.multiplier || (roundPayload.visualOutcome && roundPayload.visualOutcome.targetMultiplier))) || 0;
+        const vo = (roundPayload && roundPayload.visualOutcome) || {};
+        const isWin = !!vo.safeLanding;
+        const finalMult = Number(vo.finalMultiplier) || 0;
 
         currentDistance = flightProgress * 320;
         document.getElementById('tele-dist').textContent = currentDistance.toFixed(1) + 'm';
@@ -1714,6 +1656,7 @@
             // Position items flying from right to left
             const progressDelta = item.fraction - flightProgress;
             item.x = planeX + progressDelta * (W * 2.2);
+            item.y = planeY + item.dy;
             item.pulse = (item.pulse || 0) + 0.05;
 
             // Draw if within viewport
@@ -1721,7 +1664,7 @@
               drawSkyItem(item);
 
               // Check collision with plane
-              if (Math.abs(item.x - planeX) < 28 && Math.abs(item.y - planeY) < 30) {
+              if (Math.abs(item.x - planeX) < 28) {
                 item.hit = true;
 
                 if (item.type === 'rocket') {
@@ -1922,17 +1865,25 @@
         return;
       }
 
+      if (!res.visualOutcome || !Array.isArray(res.visualOutcome.items)) {
+        isFlying = false;
+        playBtn.classList.remove('disabled', 'flying');
+        postParent({ type: 'BET_ENDED' });
+        showToast("Unexpected server reply");
+        stopAutoPlay();
+        refreshBalance();
+        return;
+      }
+
       roundPayload = res;
       if (typeof res.newBalance === 'number') {
         serverBalance = res.newBalance;
+        shownBalance = res.newBalance - (Number(res.payout) || 0);   // the stake only, until the plane lands or crashes
         showBalance();
       }
 
-      const isWin = res.isWin || (res.visualOutcome && res.visualOutcome.safeLanding);
-      const targetMult = res.multiplier || (res.visualOutcome && res.visualOutcome.targetMultiplier) || 0;
-
-      // Build route that visually encounters matching obstacles
-      buildFlightRoute(isWin, targetMult);
+      // The route contains exactly the items the server drew
+      buildFlightRoute(res.visualOutcome.items);
 
       // Start engine sound & flight
       playEngineSound(true);
@@ -1945,9 +1896,12 @@
       playBtn.classList.remove('disabled', 'flying');
       postParent({ type: 'BET_ENDED' });
 
-      const isWin = roundPayload && (roundPayload.isWin || (roundPayload.visualOutcome && roundPayload.visualOutcome.safeLanding));
-      const mult = (roundPayload && (roundPayload.multiplier || (roundPayload.visualOutcome && roundPayload.visualOutcome.targetMultiplier))) || 0;
+      const vo = (roundPayload && roundPayload.visualOutcome) || {};
+      const isWin = !!vo.safeLanding;
+      const mult = Number(vo.finalMultiplier) || 0;
       const payout = (roundPayload && roundPayload.payout) || 0;
+      shownBalance = serverBalance;
+      showBalance();
 
       // Update "Last win" banner (Screenshots 2 & 3)
       const lastWinBanner = document.getElementById('last-win-banner');
